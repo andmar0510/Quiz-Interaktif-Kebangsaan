@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis Pengetahuan KeIndonesiaan</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome untuk Ikon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Cinzel:wght@700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        merah: {
+                            500: '#E63946',
+                            600: '#D62828',
+                            700: '#9B111E'
+                        },
+                        emas: {
+                            400: '#F4A261',
+                            500: '#E9C46A',
+                            600: '#D4AF37'
+                        },
+                        nusantara: {
+                            navy: '#1D3557',
+                            emerald: '#2A9D8F',
+                            bg: '#F8F9FA'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        display: ['Cinzel', 'serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: linear-gradient(135deg, #1D3557 0%, #0F172A 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .batik-pattern {
+            background-color: #1d3557;
+            background-image: radial-gradient(#2a9d8f 0.75px, transparent 0.75px), radial-gradient(#2a9d8f 0.75px, #1d3557 0.75px);
+            background-size: 30px 30px;
+            background-position: 0 0, 15px 15px;
+            opacity: 0.15;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-8px); }
+            40%, 80% { transform: translateX(8px); }
+        }
+
+        .animate-shake {
+            animation: shake 0.4s ease-in-out;
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.9); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .animate-pop {
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .btn-option {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .btn-option:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+        }
+
+        .btn-option:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        /* Responsive 16:9 Aspect Ratio Container for Projector Setup */
+        .aspect-container {
+            width: 100%;
+            max-width: 960px;
+            min-height: 580px;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center p-3 md:p-6 relative overflow-x-hidden">
+
+    <!-- Latar Belakang Dekoratif Batik -->
+    <div class="fixed inset-0 batik-pattern pointer-events-none"></div>
+
+    <!-- Container Utama App Game -->
+    <main class="aspect-container glass-card rounded-3xl overflow-hidden relative z-10 flex flex-col justify-between my-auto transition-all duration-300">
+
+        <!-- Header Info Game -->
+        <header class="bg-gradient-to-r from-merah-700 via-merah-600 to-merah-500 text-white p-4 md:px-8 md:py-5 flex items-center justify-between shadow-md">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-xl shadow-inner border border-white/30">
+                    🇮🇩
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg md:text-xl tracking-wide font-display">KUIS NUSANTARA</h1>
+                    <p class="text-xs text-red-100 opacity-90 hidden sm:block">Jelajahi Kekayaan & Kebudayaan Indonesia</p>
+                </div>
+            </div>
+
+            <!-- Header Status (Aktif di Layar Kuis) -->
+            <div id="header-stats" class="hidden flex items-center gap-4 text-sm font-semibold">
+                <div class="bg-black/20 px-3 py-1.5 rounded-full flex items-center gap-2 border border-white/10">
+                    <i class="fa-solid fa-trophy text-emas-500"></i>
+                    <span id="score-display">Skor: 0</span>
+                </div>
+                <div class="bg-black/20 px-3 py-1.5 rounded-full flex items-center gap-2 border border-white/10">
+                    <i class="fa-solid fa-fire text-orange-400"></i>
+                    <span id="streak-display">Streak: 0</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Content Body -->
+        <div class="p-4 md:p-8 flex-grow flex flex-col justify-center">
+
+            <!-- 1. BERANDA / START SCREEN -->
+            <section id="start-screen" class="text-center py-4 animate-pop flex flex-col items-center">
+                <div class="inline-block p-4 rounded-full bg-red-100 text-merah-600 mb-4 shadow-inner">
+                    <i class="fa-solid fa-landmark-flag text-5xl md:text-6xl"></i>
+                </div>
+                <h2 class="text-2xl md:text-4xl font-extrabold text-nusantara-navy mb-3 font-display">
+                    Uji Pengetahuan KeIndonesiaan
+                </h2>
+                <p class="text-gray-600 max-w-lg mx-auto mb-6 text-sm md:text-base leading-relaxed">
+                    Tunjukkan seberapa jauh pengetahuanmu tentang Sejarah, Geografi, Kuliner, Kebudayaan, dan Landmark megah di tanah air Indonesia!
+                </p>
+
+                <!-- Ringkasan Fitur -->
+                <div class="grid grid-cols-3 gap-3 md:gap-4 max-w-md w-full mb-8 text-xs md:text-sm font-semibold text-gray-700">
+                    <div class="p-3 bg-red-50 rounded-xl border border-red-100 flex flex-col items-center gap-1">
+                        <i class="fa-solid fa-list-check text-merah-600 text-lg"></i>
+                        <span>12 Soal Pilihan</span>
+                    </div>
+                    <div class="p-3 bg-amber-50 rounded-xl border border-amber-100 flex flex-col items-center gap-1">
+                        <i class="fa-solid fa-clock text-amber-600 text-lg"></i>
+                        <span>Timer 20 Detik</span>
+                    </div>
+                    <div class="p-3 bg-emerald-50 rounded-xl border border-emerald-100 flex flex-col items-center gap-1">
+                        <i class="fa-solid fa-award text-emerald-600 text-lg"></i>
+                        <span>Predikat Gelar</span>
+                    </div>
+                </div>
+
+                <button id="btn-start" onclick="startGame()" class="w-full sm:w-auto px-10 py-4 bg-gradient-to-r from-merah-600 to-merah-500 hover:from-merah-700 hover:to-merah-600 text-white font-bold text-lg rounded-2xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-3 mx-auto cursor-pointer">
+                    <i class="fa-solid fa-play"></i> Mulai Bermain
+                </button>
+            </section>
+
+            <!-- 2. QUIZ SCREEN -->
+            <section id="quiz-screen" class="hidden flex-col justify-between h-full">
+                
+                <!-- Progress & Timer Bar -->
+                <div class="mb-6">
+                    <div class="flex justify-between items-center text-xs md:text-sm font-bold text-gray-600 mb-2">
+                        <span id="question-tracker" class="text-nusantara-navy">Soal 1 dari 12</span>
+                        <span id="timer-text" class="flex items-center gap-1 text-merah-600">
+                            <i class="fa-regular fa-clock"></i> <span id="timer-sec">20</span>s
+                        </span>
+                    </div>
+                    
+                    <!-- Progress Soal -->
+                    <div class="w-full bg-gray-200 h-2.5 rounded-full overflow-hidden mb-1">
+                        <div id="progress-bar" class="bg-nusantara-emerald h-full transition-all duration-300 w-0"></div>
+                    </div>
+                    <!-- Timer Countdown Visual Bar -->
+                    <div class="w-full bg-gray-100 h-1.5 rounded-full overflow-hidden">
+                        <div id="timer-bar" class="bg-merah-500 h-full transition-linear w-full"></div>
+                    </div>
+                </div>
+
+                <!-- Soal & Kategori -->
+                <div id="question-card" class="mb-6 animate-pop">
+                    <div class="mb-2">
+                        <span id="category-badge" class="inline-block px-3 py-1 bg-blue-100 text-nusantara-navy font-bold text-xs rounded-full uppercase tracking-wider">
+                            Kategori
+                        </span>
+                    </div>
+                    <h3 id="question-text" class="text-lg md:text-2xl font-bold text-gray-800 leading-snug">
+                        Memuat pertanyaan...
+                    </h3>
+                </div>
+
+                <!-- Opsi Jawaban -->
+                <div id="options-container" class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
+                    <!-- Opsi tombol akan di-generate via JavaScript -->
+                </div>
+
+                <!-- Kotak Penjelasan/Pembahasan (Muncul setelah menjawab) -->
+                <div id="explanation-box" class="hidden p-4 rounded-xl bg-blue-50 border border-blue-200 text-sm text-gray-700 mb-4 animate-pop">
+                    <div class="font-bold text-nusantara-navy mb-1 flex items-center gap-2">
+                        <i class="fa-solid fa-circle-info text-blue-500"></i> Pembahasan:
+                    </div>
+                    <p id="explanation-text"></p>
+                </div>
+
+                <!-- Tombol Lanjut -->
+                <div class="flex justify-end mt-2">
+                    <button id="btn-next" onclick="nextQuestion()" class="hidden px-6 py-2.5 bg-nusantara-navy hover:bg-slate-800 text-white font-bold rounded-xl shadow transition-all duration-200 flex items-center gap-2 cursor-pointer">
+                        Lanjut <i class="fa-solid fa-arrow-right text-xs"></i>
+                    </button>
+                </div>
+            </section>
+
+            <!-- 3. RESULT SCREEN -->
+            <section id="result-screen" class="hidden text-center py-4 animate-pop flex flex-col items-center">
+                <div class="w-20 h-20 rounded-full bg-amber-100 text-emas-600 flex items-center justify-center mb-4 text-4xl shadow-inner border border-amber-200">
+                    <i id="badge-icon" class="fa-solid fa-trophy"></i>
+                </div>
+                <h2 class="text-2xl md:text-3xl font-extrabold text-nusantara-navy mb-1 font-display">Hasil Akhir Kuis</h2>
+                <p id="title-badge" class="text-merah-600 font-bold text-lg md:text-xl mb-6">"Pahlawan Pengetahuan"</p>
+
+                <!-- Statistik Hasil -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 md:gap-4 w-full max-w-lg mb-8">
+                    <div class="p-3 bg-gray-50 border border-gray-200 rounded-2xl">
+                        <div class="text-xs text-gray-500 font-medium">Skor Total</div>
+                        <div id="final-score" class="text-2xl font-extrabold text-nusantara-navy">0</div>
+                    </div>
+                    <div class="p-3 bg-gray-50 border border-gray-200 rounded-2xl">
+                        <div class="text-xs text-gray-500 font-medium">Akurasi</div>
+                        <div id="final-accuracy" class="text-2xl font-extrabold text-nusantara-emerald">0%</div>
+                    </div>
+                    <div class="p-3 bg-gray-50 border border-gray-200 rounded-2xl">
+                        <div class="text-xs text-gray-500 font-medium">Benar</div>
+                        <div id="final-correct" class="text-2xl font-extrabold text-emerald-600">0</div>
+                    </div>
+                    <div class="p-3 bg-gray-50 border border-gray-200 rounded-2xl">
+                        <div class="text-xs text-gray-500 font-medium">Salah/Habis</div>
+                        <div id="final-wrong" class="text-2xl font-extrabold text-merah-600">0</div>
+                    </div>
+                </div>
+
+                <!-- Tombol Main Lagi -->
+                <button onclick="restartGame()" class="w-full sm:w-auto px-8 py-3.5 bg-gradient-to-r from-merah-600 to-merah-500 hover:from-merah-700 hover:to-merah-600 text-white font-bold rounded-2xl shadow-lg transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer mx-auto">
+                    <i class="fa-solid fa-rotate-right"></i> Main Lagi (Restart)
+                </button>
+            </section>
+
+        </div>
+
+        <!-- Footer -->
+        <footer class="bg-gray-50 border-t border-gray-200 py-3 px-6 text-center text-xs text-gray-500 flex justify-between items-center">
+            <span>&copy; Game Kuis KeIndonesiaan</span>
+            <span class="flex items-center gap-1"><i class="fa-solid fa-heart text-merah-500"></i> Cintai Indonesia</span>
+        </footer>
+    </main>
+
+    <script>
+        // Web Audio API Sound Synthesizer (Tanpa dependency file eksternal)
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playSound(type) {
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            const now = audioCtx.currentTime;
+
+            if (type === 'correct') {
+                // Sound chime tinggi yang menyenangkan saat benar
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(523.25, now); // C5
+                osc.frequency.exponentialRampToValueAtTime(659.25, now + 0.1); // E5
+                osc.frequency.exponentialRampToValueAtTime(783.99, now + 0.2); // G5
+                gain.gain.setValueAtTime(0.3, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
+                osc.start(now);
+                osc.stop(now + 0.35);
+            } else if (type === 'wrong') {
+                // Sound buzz rendah saat salah
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(180, now);
+                osc.frequency.linearRampToValueAtTime(110, now + 0.25);
+                gain.gain.setValueAtTime(0.3, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
+                osc.start(now);
+                osc.stop(now + 0.25);
+            } else if (type === 'click') {
+                // Sound pop lembut saat menekan opsi
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(400, now);
+                osc.frequency.exponentialRampToValueAtTime(200, now + 0.05);
+                gain.gain.setValueAtTime(0.15, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.05);
+                osc.start(now);
+                osc.stop(now + 0.05);
+            } else if (type === 'victory') {
+                // Fanfare singkat kemenangan
+                [261.63, 329.63, 392.00, 523.25].forEach((freq, idx) => {
+                    const noteOsc = audioCtx.createOscillator();
+                    const noteGain = audioCtx.createGain();
+                    noteOsc.connect(noteGain);
+                    noteGain.connect(audioCtx.destination);
+
+                    noteOsc.frequency.setValueAtTime(freq, now + idx * 0.1);
+                    noteGain.gain.setValueAtTime(0.2, now + idx * 0.1);
+                    noteGain.gain.exponentialRampToValueAtTime(0.01, now + idx * 0.1 + 0.3);
+
+                    noteOsc.start(now + idx * 0.1);
+                    noteOsc.stop(now + idx * 0.1 + 0.3);
+                });
+            }
+        }
+
+        // Bank Soal Pengetahuan KeIndonesiaan (12 Soal Lengkap)
+        const quizData = [
+            {
+                category: "Sejarah",
+                question: "Siapakah dua tokoh pahlawan nasional yang menandatangani Naskah Proklamasi Kemerdekaan Indonesia atas nama bangsa Indonesia?",
+                options: [
+                    "Ir. Soekarno & Sutan Sjahrir",
+                    "Ir. Soekarno & Drs. Mohammad Hatta",
+                    "Drs. Mohammad Hatta & Ki Hajar Dewantara",
+                    "Ir. Soekarno & Jenderal Soedirman"
+                ],
+                answer: 1,
+                explanation: "Naskah Proklamasi ditandatangani oleh Ir. Soekarno dan Drs. Mohammad Hatta di Jalan Pegangsaan Timur 56, Jakarta pada 17 Agustus 1945 atas nama bangsa Indonesia."
+            },
+            {
+                category: "Geografi",
+                question: "Danau vulkanik terbesar di Indonesia sekaligus danau vulkanik terbesar di dunia adalah...",
+                options: [
+                    "Danau Singkarak",
+                    "Danau Kelimutu",
+                    "Danau Toba",
+                    "Danau Sentani"
+                ],
+                answer: 2,
+                explanation: "Danau Toba di Sumatera Utara memiliki panjang 100 km dan lebar 30 km. Danau ini terbentuk dari letusan gunung berapi super masif puluhan ribu tahun lalu."
+            },
+            {
+                category: "Landmark & Candi",
+                question: "Candi Buddha terbesar di dunia yang dibangun pada masa Kerajaan Syailendra dan terletak di Magelang, Jawa Tengah adalah...",
+                options: [
+                    "Candi Prambanan",
+                    "Candi Borobudur",
+                    "Candi Mendut",
+                    "Candi Dieng"
+                ],
+                answer: 1,
+                explanation: "Candi Borobudur dibangun pada abad ke-8 hingga ke-9 Masehi dan diakui sebagai salah satu situs warisan dunia UNESCO."
+            },
+            {
+                category: "Kuliner Khas",
+                question: "Makanan khas Sumatera Barat terbuat dari daging sapi dengan rempah-rempah yang pernah dinobatkan sebagai makanan terlezat di dunia versi CNN adalah...",
+                options: [
+                    "Rendang",
+                    "Gudeg",
+                    "Soto Lamongan",
+                    "Pempek"
+                ],
+                answer: 0,
+                explanation: "Rendang diproses dengan teknik memasak perlahan menggunakan santan dan bumbu kaya rempah hingga mengering dan berwarna gelap kehitaman."
+            },
+            {
+                category: "Kebudayaan",
+                question: "Alat musik tradisional berbahan bambu dari Jawa Barat yang dimainkan dengan cara digoyangkan dan telah diakui UNESCO adalah...",
+                options: [
+                    "Sasando",
+                    "Kolintang",
+                    "Angklung",
+                    "Gamelan"
+                ],
+                answer: 2,
+                explanation: "Angklung terdaftar sebagai Karya Agung Warisan Budaya Lisan dan Nonbendawi Manusia UNESCO sejak November 2010."
+            },
+            {
+                category: "Fauna Endemik",
+                question: "Kadal terbesar di dunia yang merupakan hewan endemik asli Indonesia yang hidup di Nusa Tenggara Timur adalah...",
+                options: [
+                    "Biawak Air",
+                    "Komodo",
+                    "Iguana",
+                    "Babi Rusa"
+                ],
+                answer: 1,
+                explanation: "Komodo (Varanus komodoensis) adalah spesies kadal terbesar di dunia yang mendiami Pulau Komodo, Rinca, Flores, Gili Motang, dan Gili Dasami."
+            },
+            {
+                category: "Sejarah & Lagu",
+                question: "Siapakah pencipta lagu kebangsaan 'Indonesia Raya' yang pertama kali dikumandangkan pada Sumpah Pemuda 1928?",
+                options: [
+                    "Ismail Marzuki",
+                    "W.R. Soepratman",
+                    "C. Simanjuntak",
+                    "Ibu Soed"
+                ],
+                answer: 1,
+                explanation: "Wage Rudolf Soepratman menciptakan dan memainkan lagu Indonesia Raya menggunakan biola saat Kongres Pemuda II pada 28 Oktober 1928."
+            },
+            {
+                category: "Semboyan Bangsa",
+                question: "Semboyan nasional Indonesia 'Bhinneka Tunggal Ika' diambil dari kitab kuno bernama...",
+                options: [
+                    "Kitab Negarakertagama",
+                    "Kitab Sutasoma",
+                    "Kitab Pararaton",
+                    "Kitab Arjuna Wiwaha"
+                ],
+                answer: 1,
+                explanation: "Bhinneka Tunggal Ika ditulis oleh Mpu Tantular dalam Kitab Sutasoma pada masa Kerajaan Majapahit, yang berarti 'Berbeda-beda tetapi tetap satu'."
+            },
+            {
+                category: "Geografi & Puncak",
+                question: "Puncak gunung tertinggi di Indonesia yang diselimuti salju abadi terletak di Papua bernama...",
+                options: [
+                    "Puncak Jaya (Carstensz Pyramid)",
+                    "Gunung Rinjani",
+                    "Gunung Kerinci",
+                    "Gunung Semeru"
+                ],
+                answer: 0,
+                explanation: "Puncak Jaya di Pegunungan Jayawijaya Papua memiliki ketinggian 4.884 mdpl dan merupakan salah satu dari 'Seven Summits' dunia."
+            },
+            {
+                category: "Kebudayaan & Rumah Adat",
+                question: "Rumah adat khas suku Toraja dari Sulawesi Selatan yang memiliki atap melengkung menyerupai perahu adalah...",
+                options: [
+                    "Rumah Gadang",
+                    "Tongkonan",
+                    "Rumah Joglo",
+                    "Honai"
+                ],
+                answer: 1,
+                explanation: "Tongkonan adalah rumah adat khas masyarakat Toraja dengan ciri khas atap kayu melengkung mirip perahu dan dihiasi tanduk kerbau."
+            },
+            {
+                category: "Seni Tari",
+                question: "Tari tradisional Bali yang dibawakan oleh puluhan penari pria yang duduk melingkar sambil menyanyikan irama 'cak-cak-cak' adalah...",
+                options: [
+                    "Tari Pendet",
+                    "Tari Barong",
+                    "Tari Kecak",
+                    "Tari Jaipong"
+                ],
+                answer: 2,
+                explanation: "Tari Kecak menceritakan kisah Ramayana dan dipentaskan tanpa musik pengiring instrumen, melainkan menggunakan paduan suara penarinya."
+            },
+            {
+                category: "Landmark Modern",
+                question: "Monumen nasional setinggi 132 meter di pusat kota Jakarta yang puncaknya dilapisi emas murni dinamakan...",
+                options: [
+                    "Monumen Pancasila Sakti",
+                    "Monas (Monumen Nasional)",
+                    "Patung Dirgantara",
+                    "Tugu Pahlawan"
+                ],
+                answer: 1,
+                explanation: "Monas dibangun atas perintah Presiden Soekarno mulai tahun 1961 untuk mengenang perlawanan dan perjuangan rakyat Indonesia merebut kemerdekaan."
+            }
+        ];
+
+        // Game State Variables
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let streak = 0;
+        let correctCount = 0;
+        let wrongCount = 0;
+        let timer;
+        let timeLeft = 20;
+        const TIME_LIMIT = 20;
+        let isAnswered = false;
+
+        // DOM Elements
+        const startScreen = document.getElementById('start-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const resultScreen = document.getElementById('result-screen');
+        const headerStats = document.getElementById('header-stats');
+
+        const scoreDisplay = document.getElementById('score-display');
+        const streakDisplay = document.getElementById('streak-display');
+        const questionTracker = document.getElementById('question-tracker');
+        const categoryBadge = document.getElementById('category-badge');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const explanationBox = document.getElementById('explanation-box');
+        const explanationText = document.getElementById('explanation-text');
+        const btnNext = document.getElementById('btn-next');
+        const progressBar = document.getElementById('progress-bar');
+        const timerSec = document.getElementById('timer-sec');
+        const timerBar = document.getElementById('timer-bar');
+
+        // Mulai Game
+        function startGame() {
+            playSound('click');
+            startScreen.classList.add('hidden');
+            resultScreen.classList.add('hidden');
+            quizScreen.classList.remove('hidden');
+            quizScreen.classList.add('flex');
+            headerStats.classList.remove('hidden');
+
+            currentQuestionIndex = 0;
+            score = 0;
+            streak = 0;
+            correctCount = 0;
+            wrongCount = 0;
+
+            updateScoreboard();
+            loadQuestion();
+        }
+
+        // Update Papan Skor
+        function updateScoreboard() {
+            scoreDisplay.textContent = `Skor: ${score}`;
+            streakDisplay.textContent = `Streak: ${streak}`;
+        }
+
+        // Memuat Soal Aktif
+        function loadQuestion() {
+            isAnswered = false;
+            explanationBox.classList.add('hidden');
+            btnNext.classList.add('hidden');
+
+            const q = quizData[currentQuestionIndex];
+
+            // Render Header Soal
+            questionTracker.textContent = `Soal ${currentQuestionIndex + 1} dari ${quizData.length}`;
+            categoryBadge.textContent = q.category;
+            questionText.textContent = q.question;
+
+            // Render Progress Bar
+            const progressPercent = ((currentQuestionIndex) / quizData.length) * 100;
+            progressBar.style.width = `${progressPercent}%`;
+
+            // Render Tombol Opsi Jawaban
+            optionsContainer.innerHTML = '';
+            q.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = `btn-option w-full p-4 text-left rounded-2xl border-2 border-gray-200 bg-white hover:bg-gray-50 text-gray-800 font-semibold text-sm md:text-base flex items-center justify-between group cursor-pointer`;
+                btn.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <span class="w-8 h-8 rounded-xl bg-gray-100 group-hover:bg-red-100 group-hover:text-merah-600 font-bold flex items-center justify-center text-xs text-gray-600 transition-colors">
+                            ${String.fromCharCode(65 + idx)}
+                        </span>
+                        <span>${opt}</span>
+                    </div>
+                    <i class="fa-regular fa-circle text-gray-300 group-hover:text-merah-500 text-lg"></i>
+                `;
+                btn.onclick = () => checkAnswer(idx);
+                optionsContainer.appendChild(btn);
+            });
+
+            // Mulai Timer
+            startTimer();
+        }
+
+        // Mulai Timer Countdown 20 Detik
+        function startTimer() {
+            clearInterval(timer);
+            timeLeft = TIME_LIMIT;
+            timerSec.textContent = timeLeft;
+            timerBar.style.transition = 'none';
+            timerBar.style.width = '100%';
+
+            // Trigger reflow untuk animasi timer bar
+            setTimeout(() => {
+                timerBar.style.transition = `width ${TIME_LIMIT}s linear`;
+                timerBar.style.width = '0%';
+            }, 50);
+
+            timer = setInterval(() => {
+                timeLeft--;
+                timerSec.textContent = timeLeft;
+
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    timeOutAnswer();
+                }
+            }, 1000);
+        }
+
+        // Penanganan Jika Waktu Habis
+        function timeOutAnswer() {
+            if (isAnswered) return;
+            isAnswered = true;
+            wrongCount++;
+            streak = 0;
+            updateScoreboard();
+
+            playSound('wrong');
+
+            // Tandai Jawaban yang Benar
+            const q = quizData[currentQuestionIndex];
+            const buttons = optionsContainer.querySelectorAll('button');
+            buttons.forEach((btn, idx) => {
+                btn.disabled = true;
+                if (idx === q.answer) {
+                    btn.className = "w-full p-4 text-left rounded-2xl border-2 border-emerald-500 bg-emerald-50 text-emerald-900 font-semibold text-sm md:text-base flex items-center justify-between";
+                    btn.querySelector('i').className = "fa-solid fa-circle-check text-emerald-600 text-lg";
+                }
+            });
+
+            showExplanation("Waktu habis! Perhatikan jawaban yang benar di atas.");
+        }
+
+        // Memeriksa Jawaban yang Dipilih
+        function checkAnswer(selectedIndex) {
+            if (isAnswered) return;
+            isAnswered = true;
+            clearInterval(timer);
+
+            // Bekukan sisa animasi timer bar
+            const computedWidth = window.getComputedStyle(timerBar).width;
+            timerBar.style.transition = 'none';
+            timerBar.style.width = computedWidth;
+
+            const q = quizData[currentQuestionIndex];
+            const buttons = optionsContainer.querySelectorAll('button');
+
+            // Matikan semua tombol opsi
+            buttons.forEach(btn => btn.disabled = true);
+
+            if (selectedIndex === q.answer) {
+                // JAWABAN BENAR
+                playSound('correct');
+                streak++;
+                correctCount++;
+                const bonusPoints = 100 + (streak * 10) + (timeLeft * 2);
+                score += bonusPoints;
+
+                buttons[selectedIndex].className = "w-full p-4 text-left rounded-2xl border-2 border-emerald-500 bg-emerald-50 text-emerald-900 font-semibold text-sm md:text-base flex items-center justify-between animate-pop";
+                buttons[selectedIndex].querySelector('i').className = "fa-solid fa-circle-check text-emerald-600 text-lg";
+            } else {
+                // JAWABAN SALAH
+                playSound('wrong');
+                streak = 0;
+                wrongCount++;
+
+                buttons[selectedIndex].className = "w-full p-4 text-left rounded-2xl border-2 border-red-500 bg-red-50 text-red-900 font-semibold text-sm md:text-base flex items-center justify-between animate-shake";
+                buttons[selectedIndex].querySelector('i').className = "fa-solid fa-circle-xmark text-red-600 text-lg";
+
+                // Tunjukkan juga opsi yang benar
+                buttons[q.answer].className = "w-full p-4 text-left rounded-2xl border-2 border-emerald-500 bg-emerald-50 text-emerald-900 font-semibold text-sm md:text-base flex items-center justify-between";
+                buttons[q.answer].querySelector('i').className = "fa-solid fa-circle-check text-emerald-600 text-lg";
+            }
+
+            updateScoreboard();
+            showExplanation(q.explanation);
+        }
+
+        // Tampilkan Kotak Pembahasan & Tombol Lanjut
+        function showExplanation(text) {
+            explanationText.textContent = text;
+            explanationBox.classList.remove('hidden');
+            btnNext.classList.remove('hidden');
+        }
+
+        // Pindah ke Soal Berikutnya / Hasil
+        function nextQuestion() {
+            playSound('click');
+            currentQuestionIndex++;
+
+            if (currentQuestionIndex < quizData.length) {
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        // Tampilkan Ringkasan Akhir
+        function showResults() {
+            clearInterval(timer);
+            playSound('victory');
+
+            quizScreen.classList.add('hidden');
+            quizScreen.classList.remove('flex');
+            resultScreen.classList.remove('hidden');
+            resultScreen.classList.add('flex');
+
+            // Kalkulasi Akurasi
+            const totalQuestions = quizData.length;
+            const accuracy = Math.round((correctCount / totalQuestions) * 100);
+
+            document.getElementById('final-score').textContent = score;
+            document.getElementById('final-accuracy').textContent = `${accuracy}%`;
+            document.getElementById('final-correct').textContent = correctCount;
+            document.getElementById('final-wrong').textContent = wrongCount;
+
+            // Penentuan Predikat Gelar Berdasarkan Akurasi
+            const titleBadge = document.getElementById('title-badge');
+            const badgeIcon = document.getElementById('badge-icon');
+
+            if (accuracy === 100) {
+                titleBadge.textContent = "🏆 Pahlawan Bangsa Sejati";
+                badgeIcon.className = "fa-solid fa-crown text-amber-500";
+            } else if (accuracy >= 75) {
+                titleBadge.textContent = "🌟 Penjelajah Nusantara Utama";
+                badgeIcon.className = "fa-solid fa-star text-amber-500";
+            } else if (accuracy >= 50) {
+                titleBadge.textContent = "🇮🇩 Pemuda Cinta Tanah Air";
+                badgeIcon.className = "fa-solid fa-award text-blue-500";
+            } else {
+                titleBadge.textContent = "📖 Pelajar Nusantara (Ayo Belajar Lagi)";
+                badgeIcon.className = "fa-solid fa-book-open text-gray-500";
+            }
+
+            // Update Progress Bar Akhir 100%
+            progressBar.style.width = '100%';
+        }
+
+        // Restart Permainan
+        function restartGame() {
+            startGame();
+        }
+    </script>
+</body>
+</html>
